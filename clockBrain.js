@@ -1,81 +1,76 @@
-let breakLength = document.getElementById("break-length");
-let sessionLength = document.getElementById("session-length");
-let startStopButton = document.getElementById("start_stop");
-let resetButton = document.getElementById("reset");
-let timeLeft = document.getElementById("time-left");
-let timer;
-let timerStatus = "begin";
+let breakPlease = document.getElementById("breakPlease").innerHTML = 5;
+let startingMinutes = 25;
+let time = startingMinutes * 60;
+let isBreak = false;
 
-startStopButton.addEventListener("click", () => {
-    if (timerStatus === "begin" || timerStatus === "stopped") {
-        // Start the timer
-        console.log("start the timer");
-        timerStatus = "counting";
-        timer = setInterval(() => {
-            timeLeft.innerText = decrementTime(timeLeft.innerText);
-        }, 1000);
+alert("25 + 5 Clock, also known as Pomodoro's technique, is a time management method. Most efficient way to manage the work/rest time is to work for 25 minutes, then rest for 5 minutes.");
 
-    } else if (timerStatus === "counting") {
-        // Stop the timer
-        console.log("stop the timer");
-        timerStatus = "stopped";
-        clearInterval(timer);
-    }
-});
+function increaseBreak() {
+  if (breakPlease < 60) {
+  document.getElementById('breakPlease').innerHTML = ++breakPlease;
+  }
+};
 
-resetButton.addEventListener("click", () => {
-    console.log("reset button clicked");
-    clearInterval(timer);
-    timeLeft.innerText = "25:00";
-    sessionLength.innerText = "25";
-    breakLength.innerText = "5";
-});
+function decreaseBreak() {
+  if (breakPlease >= 2) {
+  document.getElementById('breakPlease').innerHTML = --breakPlease;
+  }
+};
 
-function decrementTime(timeString) {
-    let timeDisplay = timeString.split(":");
-    let minuteDisplay = parseInt(timeDisplay[0]);
-    let secondDisplay = parseInt(timeDisplay[1]);
 
-    secondDisplay -= 1;
+function increaseSession() {
+  if (startingMinutes < 60) {
+  document.getElementById('timeItself').innerHTML = ++startingMinutes;
+  time = startingMinutes * 60;
+  }
+};
 
-    if (secondDisplay === -1) {
-        secondDisplay = 59;
-        minuteDisplay -= 1;
-    }
+function decreaseSession() { 
+   if (startingMinutes >= 2) {
+   document.getElementById('timeItself').innerHTML = --startingMinutes;
+   time = startingMinutes * 60;
+  }
+};
 
-    if (secondDisplay <= 9) {
-        secondDisplay = "0" + secondDisplay;
-    }
+const countdownEl = document.getElementById('countdown');
 
+let interval = setInterval(updateCountdown, 1000);
+
+function updateCountdown() {
+  const minutesLeft = Math.floor(time / 60);
+  let secondsLeft = time % 60;
   
-    return minuteDisplay + ":" + secondDisplay;  
+  if (minutesLeft === 0 && secondsLeft === 0) {
+      isBreak = !isBreak;
+      time = (isBreak ? breakPlease : startingMinutes) * 60;
+      console.log(isBreak ? 'break' : 'work', 'start with', time);
+  }
+  
+  secondsLeft = secondsLeft < 10 ? '0' + secondsLeft : secondsLeft;
+  
+  countdownEl.innerHTML = `${minutesLeft}:${secondsLeft}`;
+  time--;
+ 
 };
 
+ function startStop() {
+    if (interval === null) {
+        interval = setInterval(updateCountdown, 1000);
+      } else {
+        clearInterval(interval);
+        interval = null;
+      }
+      console.log('sAS clicked')
+ };
+ 
 
-function incrementBreak() {
-    if (parseFloat(breakLength.innerText) < 60) {     
-       breakLength.innerText = parseFloat(breakLength.innerText) + 1;      
-    }
-};
 
-function decrementBreak() {
-    if (parseFloat(breakLength.innerText) > 0) {
-        breakLength.innerText = parseFloat(breakLength.innerText) - 1;      
-    }
-};
 
-function incrementSession() {
-    if (parseFloat(sessionLength.innerText) < 60) {
-       let incrementSessionValue = parseFloat(sessionLength.innerText) + 1;
-       sessionLength.innerText = incrementSessionValue;
-       timeLeft.innerText = incrementSessionValue + ":00";
-    }
-};
-
- function decrementSession() {
-    if (parseFloat(sessionLength.innerText) > 0) {
-       let decrementSessionValue = parseFloat(sessionLength.innerText) - 1;
-       sessionLength.innerText = decrementSessionValue;
-       timeLeft.innerText = decrementSessionValue + ":00";
-    }
+function resetTime() {
+  console.log('rT clicked')
+  startingMinutes = 25;
+  time = startingMinutes * 60;
+  if (interval == null) {
+    updateCountdown();
+  }
 };
